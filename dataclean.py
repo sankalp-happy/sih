@@ -1,24 +1,24 @@
 import pandas as pd
 
 # Load the data
+df = pd.read_csv('trimmed_monthly_mean2.csv')
 
-# Load the data
-df = pd.read_csv('pune2.csv')
 
-# Define the identifier variables
-id_vars = ['Sr. No.', 'State_Name_With_LGD_Code', 'DISTRICT', 'Block_Name_With_LGD_Code', 'GP_Name_With_LGD_Code', 'Village', 'Site_Name', 'TYPE', 'SOURCE', 'Well_ID', 'Latitude', 'Longitude', 'Well_Depth (meters)', 'Aquifer', 'STATE_UT_NAME', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', 'ANNUAL', 'Jan-Feb', 'Mar-May', 'Jun-Sep', 'Oct-Dec']
+# Load the transposed DataFrame
+df1 = pd.read_csv('transposed.csv')
 
-# Reshape the DataFrame
-df_melted = df_melted[df_melted['Year_Monsoon'].str.contains(r'^\d{4}_\w+$')]
+# Load the second DataFrame
+df2 = pd.read_csv('pune3.csv')
 
-# Split the 'Year_Monsoon' column into 'Monsoon' and 'Year' columns
-df_melted[['Monsoon', 'Year']] = df_melted['Year_Monsoon'].str.split('_', expand=True)
+# Add a temporary key to both DataFrames to perform the cross join
+df1['key'] = 0
+df2['key'] = 0
 
-# Convert the 'Year' column to numeric
-df_melted['Year'] = pd.to_numeric(df_melted['Year'])
+# Perform the cross join
+merged_df = pd.merge(df1, df2, how='outer', on='key')
 
-# Sort the DataFrame by the Year column
-df_sorted = df_melted.sort_values('Year')
+# Drop the temporary key column
+merged_df.drop('key', axis=1, inplace=True)
 
-# Save the sorted DataFrame to a new CSV file
-df_sorted.to_csv('pune2_sorted.csv', index=False)
+# Save the merged DataFrame to a new CSV file
+merged_df.to_csv('merged.csv', index=False)
